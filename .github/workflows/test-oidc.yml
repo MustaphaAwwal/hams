@@ -13,6 +13,7 @@ permissions:
 jobs:
   test-oidc:
     runs-on: ubuntu-latest
+    environment: sandbox  # Specify the environment if needed
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
