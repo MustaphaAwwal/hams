@@ -63,6 +63,15 @@ module "eks_blueprints_addons" {
   enable_aws_load_balancer_controller    = true
   enable_kube_prometheus_stack           = true
   enable_metrics_server                  = true
+  aws_load_balancer_controller = {
+    values = [
+      <<-EOT
+        clusterName: ${module.eks.cluster_name}
+        region: ${var.aws_region}
+        vpcId: ${module.vpc.vpc_id}
+      EOT
+    ]
+  }
   tags = {
     Environment = "sandbox"
   }

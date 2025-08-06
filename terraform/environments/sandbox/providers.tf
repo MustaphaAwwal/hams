@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 6.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -19,7 +19,7 @@ terraform {
   backend "s3" {
     bucket         = "hams-terraform-state"
     key            = "sandbox/terraform.tfstate"
-    region         = "us-west-2"
+    region         = "us-east-1"
     dynamodb_table = "hams-terraform-locks"
     encrypt        = true
   }
