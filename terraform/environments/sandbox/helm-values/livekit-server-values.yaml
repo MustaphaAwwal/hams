@@ -2,6 +2,7 @@
 
 # LiveKit Server configuration
 livekit:
+  prometheus_port: 6789
   log_level: info
   rtc:
     use_external_ip: true
@@ -43,3 +44,7 @@ resources:
   requests:
     cpu: 7000m
     memory: 1024Mi
+
+serviceMonitor:
+  create: true
+  interval: 30s

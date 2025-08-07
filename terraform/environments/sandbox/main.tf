@@ -67,6 +67,7 @@ module "eks_blueprints_addons" {
   enable_metrics_server                  = true
   enable_argocd = true
   enable_cert_manager = true
+  enable_ingress_nginx = true
 
   aws_load_balancer_controller = {
     values = [
@@ -78,6 +79,18 @@ module "eks_blueprints_addons" {
     ]
   }
 
+
+   ingress_nginx = {
+      values = [
+        <<-EOT
+        controller:
+          service:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-internal: "false"
+      EOT
+      ]
+    }
+  
 
   tags = {
     Environment = "sandbox"
