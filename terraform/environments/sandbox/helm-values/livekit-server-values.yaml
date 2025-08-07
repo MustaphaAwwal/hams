@@ -1,6 +1,4 @@
-replicaCount: 2
-
-terminationGracePeriodSeconds: 18000
+# terminationGracePeriodSeconds: 18000
 
 # LiveKit Server configuration
 livekit:
@@ -13,18 +11,23 @@ livekit:
   redis:
     address: db.default.svc.cluster.local:6379
   keys:
-    sandboxkey: sandboxvalue
+    sandbox-key: Yw3E1V0eFMv4Tm5ShxP1WgIYfXOt1Lzrz7EsNgP+ev4=
+
   turn:
-    enabled: false
+    enabled: true
+    domain: turn.awwalmustapha.online
     tls_port: 3478
     udp_port: 3478
-    secret: tlssecret
+    secretName: turncert
 
 
 loadBalancer:
   # With ALB, TLS certificates are managed by ACM
   # Ensure you have issued a certificate for your domain in ACM
   type: alb
+  tls:
+    - hosts:
+      - livekit.awwalmustapha.online
 
 autoscaling:
   enabled: true

@@ -65,6 +65,9 @@ module "eks_blueprints_addons" {
   enable_aws_load_balancer_controller    = true
   enable_kube_prometheus_stack           = true
   enable_metrics_server                  = true
+  enable_argocd = true
+  enable_cert_manager = true
+
   aws_load_balancer_controller = {
     values = [
       <<-EOT

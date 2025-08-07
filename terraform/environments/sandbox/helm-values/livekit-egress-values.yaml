@@ -1,12 +1,10 @@
-replicaCount: 1
-
 # Suggested value for gracefully terminate the pod: 1 hour
 terminationGracePeriodSeconds: 3600
 
 egress:
-  api_key: "server-api-key"
-  api_secret: "server-api-secret"
-  ws_url: "ws://llivekit-livekit-server.livekit.svc.cluster.local"
+  api_key: "sandbox-key"
+  api_secret: "Yw3E1V0eFMv4Tm5ShxP1WgIYfXOt1Lzrz7EsNgP+ev4="
+  ws_url: "ws://livekit-server"
   log_level: info
   health_port: 8080
   prometheus_port: 9090
@@ -34,23 +32,23 @@ autoscaling:
 nodeSelector: {}
 # node.kubernetes.io/instance-type: c5.2xlarge
 
-resources: {}
-#   requests:
-#     cpu: 5000m
-#     memory: 1024Mi
-#   limits:
-#     cpu: 8000m
-#     memory: 2048Mi
+resources:
+  requests:
+    cpu: 5000m
+    memory: 1024Mi
+  limits:
+    cpu: 8000m
+    memory: 2048Mi
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: false
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
+  # create: false
+  # # Annotations to add to the service account
+  # annotations: {}
+  # # The name of the service account to use.
+  # # If not set and create is true, a name is generated using the fullname template
+  # name: ""
+  name: livekit-egress
 podAnnotations:
   linkerd.io/inject: disabled
 
