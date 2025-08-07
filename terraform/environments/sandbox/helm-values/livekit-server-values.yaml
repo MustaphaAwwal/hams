@@ -1,0 +1,42 @@
+replicaCount: 2
+
+terminationGracePeriodSeconds: 18000
+
+# LiveKit Server configuration
+livekit:
+  log_level: info
+  rtc:
+    use_external_ip: true
+    port_range_start: 50000
+    port_range_end: 60000
+    tcp_port: 7881
+  redis:
+    address: db.default.svc.cluster.local:6379
+  keys:
+    sandboxkey: sandboxvalue
+  turn:
+    enabled: false
+    tls_port: 3478
+    udp_port: 3478
+    secret: tlssecret
+
+
+loadBalancer:
+  # With ALB, TLS certificates are managed by ACM
+  # Ensure you have issued a certificate for your domain in ACM
+  type: alb
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 60
+
+# resources are set assuming a 8 core instance
+resources:
+  limits:
+    cpu: 7500m
+    memory: 2048Mi
+  requests:
+    cpu: 7000m
+    memory: 1024Mi
