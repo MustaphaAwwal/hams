@@ -29,12 +29,7 @@ resource "kubernetes_secret" "tls" {
   }
 }
 
-resource "helm_release" "app" {
-  depends_on = [kubernetes_secret.tls]
-  name       = "my-app"
-  chart      = "./charts/my-app"
-  namespace  = "my-namespace"
-}
+
 
 
 # resource "kubernetes_secret" "thanos_objstore" {
