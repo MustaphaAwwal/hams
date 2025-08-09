@@ -15,6 +15,28 @@ resource "kubernetes_service_account" "livekit_egress" {
   }
 }
 
+resource "kubernetes_secret" "tls" {
+  metadata {
+    name      = var.tls_secret_name
+    namespace = kubernetes_namespace.livekit.id
+  }
+
+  type = "kubernetes.io/tls"
+
+  data = {
+    "tls.crt" = var.tls_crt_content
+    "tls.key" =  var.tls_key_content
+  }
+}
+
+resource "helm_release" "app" {
+  depends_on = [kubernetes_secret.tls]
+  name       = "my-app"
+  chart      = "./charts/my-app"
+  namespace  = "my-namespace"
+}
+
+
 # resource "kubernetes_secret" "thanos_objstore" {
 #   metadata {
 #     name      = "thanos-objstore"

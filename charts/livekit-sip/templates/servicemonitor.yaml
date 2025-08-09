@@ -1,0 +1,17 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "livekit-sip.fullname" . }}
+  labels:
+    {{- include "livekit-sip.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitor.prometheusRelease | default "prometheus" }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "livekit-sip.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

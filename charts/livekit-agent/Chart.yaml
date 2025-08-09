@@ -1,0 +1,13 @@
+apiVersion: v2
+name: livekit-agent
+description: Helm chart to deploy a LiveKit Agent (starter agent / worker).
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - livekit
+  - agent
+  - ai
+home: https://github.com/livekit/agents
+maintainers:
+  - name: Mustapha Awwal

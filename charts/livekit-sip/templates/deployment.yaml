@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "livekit-sip.fullname" . }}
+  labels:
+    {{- include "livekit-sip.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "livekit-sip.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "livekit-sip.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.hostNetwork }}
+      hostNetwork: true
+      {{- end }}
+      serviceAccountName: {{ include "livekit-sip.serviceAccountName" . }}
+      securityContext: 
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      containers:
+        - name: livekit-sip
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "livekit-sip", "--config=/sip/config.yaml" ]
+          volumeMounts:
+            - name: config
+              mountPath: /sip
+              readOnly: true
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 6 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "livekit-sip.fullname" . }}-config
+          ports:
+            - name: sip-udp
+              containerPort: {{ .Values.service.sipPort }}
+              protocol: UDP
+            - name: sip-tcp
+              containerPort: {{ .Values.service.sipPort }}
+              protocol: TCP
+            - name: health
+              containerPort: {{ .Values.sip.health_port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.sip.prometheus_port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 6 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "livekit-sip.fullname" . }}-config
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}

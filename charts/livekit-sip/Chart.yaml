@@ -1,0 +1,14 @@
+apiVersion: v2
+name: livekit-sip
+description: Helm chart to deploy LiveKit SIP (SIP <-> WebRTC bridge).
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - livekit
+  - sip
+  - webrtc
+home: https://github.com/livekit/sip
+maintainers:
+  - name: Mustapha Awwal
+    email: awwalmustapha41@gmail.com

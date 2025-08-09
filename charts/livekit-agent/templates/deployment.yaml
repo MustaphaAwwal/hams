@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "livekit-agent.fullname" . }}
+  labels:
+    {{- include "livekit-agent.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "livekit-agent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "livekit-agent.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: starter-agent
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          envFrom:
+            - secretRef:
+                name: {{ include "livekit-agent.fullname" . }}-secrets
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

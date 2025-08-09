@@ -1,25 +1,28 @@
 
-resource "helm_release" "loki" {
-  name       = "loki"
-  namespace  = "observability"
-  create_namespace = true
-  repository = "https://grafana.github.io/helm-charts"
-  chart      = "loki"
+# resource "helm_release" "loki" {
+#   name       = "loki"
+#   namespace  = "observability"
+#   create_namespace = true
+#   repository = "https://grafana.github.io/helm-charts"
+#   chart      = "loki"
 
-  values = [templatefile("${path.module}/helm-values/loki-values.yaml", {
-    bucket_name = aws_s3_bucket.loki_logs.bucket
-    region      = var.aws_region
-  })]
-}
+#   values = [templatefile("${path.module}/helm-values/loki-values.yaml", {
+#     bucket_name = aws_s3_bucket.loki_logs.bucket
+#     region      = var.aws_region
+#   })]
+#   depends_on = [ module.eks_blueprints_addons,
+#   module.loki_irsa, aws_s3_bucket.loki_logs
+#    ]
+# }
 
-resource "helm_release" "promtail" {
-  name       = "promtail"
-  namespace  = "observability"
-  repository = "https://grafana.github.io/helm-charts"
-  chart      = "promtail"
+# resource "helm_release" "promtail" {
+#   name       = "promtail"
+#   namespace  = "observability"
+#   repository = "https://grafana.github.io/helm-charts"
+#   chart      = "promtail"
 
-  values = [file("${path.module}/helm-values/promtail-values.yaml")]
-}
+#   values = [file("${path.module}/helm-values/promtail-values.yaml")]
+# }
 
 # resource "helm_release" "jaeger" {
 #   name       = "jaeger"
