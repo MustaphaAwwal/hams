@@ -1,0 +1,34 @@
+# templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "livekit-sip-server.fullname" . }}
+  labels:
+    {{- include "livekit-sip-server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.sip.service.type }}
+  ports:
+    - port: {{ .Values.sip.service.ports.sip }}
+      targetPort: sip-udp
+      protocol: UDP
+      name: sip-udp
+    - port: {{ .Values.sip.service.ports.sip }}
+      targetPort: sip-tcp
+      protocol: TCP
+      name: sip-tcp
+    - port: {{ .Values.sip.service.ports.sips }}
+      targetPort: sips-tcp
+      protocol: TCP
+      name: sips-tcp
+    - port: {{ .Values.sip.service.ports.healthCheck }}
+      targetPort: health
+      protocol: TCP
+      name: health-check
+    {{- if .Values.sip.prometheus.enabled }}
+    - port: {{ .Values.sip.prometheus.port }}
+      targetPort: prometheus
+      protocol: TCP
+      name: prometheus-metrics
+    {{- end }}
+  selector:
+    {{- include "livekit-sip-server.selectorLabels" . | nindent 4 }}

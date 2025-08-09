@@ -1,0 +1,10 @@
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "livekit-sip-server.fullname" . }}-config
+  labels:
+    {{- include "livekit-sip-server.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+{{ toYaml .Values.sip.config | indent 4 }}

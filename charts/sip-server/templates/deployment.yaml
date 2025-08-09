@@ -1,0 +1,89 @@
+# templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "livekit-sip-server.fullname" . }}
+  labels:
+    {{- include "livekit-sip-server.labels" . | nindent 4 }}
+spec:
+  replicas: 1 # Adjust replica count as needed
+  selector:
+    matchLabels:
+      {{- include "livekit-sip-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "livekit-sip-server.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: livekit-sip
+          image: "{{ .Values.sip.image }}:{{ .Values.sip.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            # Required fields
+            - name: LIVEKIT_API_KEY
+              value: {{ .Values.sip.config.apiKey | quote }}
+            - name: LIVEKIT_API_SECRET
+              value: {{ .Values.sip.config.apiSecret | quote }}
+            - name: LIVEKIT_WS_URL
+              value: {{ .Values.sip.config.wsUrl | quote }}
+            - name: LIVEKIT_REDIS_ADDRESS
+              value: {{ .Values.sip.config.redis.address | quote }}
+            - name: LIVEKIT_REDIS_USERNAME
+              value: {{ .Values.sip.config.redis.username | default "" | quote }}
+            - name: LIVEKIT_REDIS_PASSWORD
+              value: {{ .Values.sip.config.redis.password | default "" | quote }}
+            - name: LIVEKIT_REDIS_DB
+              value: {{ .Values.sip.config.redis.db | quote }}
+
+            # Optional fields
+            {{- if .Values.sip.config.healthPort }}
+            - name: HEALTH_PORT
+              value: {{ .Values.sip.config.healthPort | quote }}
+            {{- end }}
+            {{- if .Values.sip.config.prometheusPort }}
+            - name: PROMETHEUS_PORT
+              value: {{ .Values.sip.config.prometheusPort | quote }}
+            {{- end }}
+            {{- if .Values.sip.config.logLevel }}
+            - name: LOG_LEVEL
+              value: {{ .Values.sip.config.logLevel | quote }}
+            {{- end }}
+            {{- if .Values.sip.config.sipPort }}
+            - name: SIP_PORT
+              value: {{ .Values.sip.config.sipPort | quote }}
+            {{- end }}
+            {{- if .Values.sip.config.rtpPortRangeStart }}
+            - name: RTP_PORT_RANGE_START
+              value: {{ .Values.sip.config.rtpPortRangeStart | quote }}
+            {{- end }}
+            {{- if .Values.sip.config.rtpPortRangeEnd }}
+            - name: RTP_PORT_RANGE_END
+              value: {{ .Values.sip.config.rtpPortRangeEnd | quote }}
+            {{- end }}
+
+          ports:
+            - name: sip-udp
+              containerPort: {{ .Values.sip.config.sipPort }}
+              protocol: UDP
+            - name: sip-tcp
+              containerPort: {{ .Values.sip.config.sipPort }}
+              protocol: TCP
+            - name: sips-tcp
+              containerPort: {{ .Values.sip.service.ports.sips }}
+              protocol: TCP
+            - name: health
+              containerPort: {{ .Values.sip.config.healthPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health # Customize this to your SIP server's health endpoint
+              port: {{ .Values.sip.config.healthPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health # Customize this to your SIP server's health endpoint
+              port: {{ .Values.sip.config.healthPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 3

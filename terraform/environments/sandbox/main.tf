@@ -65,7 +65,7 @@ module "eks_blueprints_addons" {
   enable_aws_load_balancer_controller    = true
   enable_kube_prometheus_stack           = true
   enable_metrics_server                  = true
-  enable_argocd = true
+  # enable_argocd = true
   enable_cert_manager = true
   enable_ingress_nginx = true
 
@@ -90,43 +90,29 @@ module "eks_blueprints_addons" {
       EOT
       ]
     }
-  
-
-  tags = {
-    Environment = "sandbox"
-  }
-}
-
-# LiveKit Egress S3 Bucket
-resource "aws_s3_bucket" "livekit_egress" {
-  bucket = "livekit-eggress-bucket"
-
-  tags = {
-    Environment = "sandbox"
-    Terraform   = "true"
-  }
-}
-
-resource "aws_s3_bucket_versioning" "livekit_egress_versioning" {
-  bucket = aws_s3_bucket.livekit_egress.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "livekit_egress_encryption" {
-  bucket = aws_s3_bucket.livekit_egress.id
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+    kube_prometheus_stack = {
+      namespace = "observability"
+      create_namespace = true
     }
-  }
-}
+    # values = [
+    #   yamlencode({
+    #     prometheus = {
+    #       thanosService         = { enabled = true }
+    #       thanosServiceMonitor  = { enabled = true }
+    #       prometheusSpec = {
+    #         thanos = {
+    #           objectStorageConfig = {
+    #             name = kubernetes_secret.thanos_objstore.metadata[0].name
+    #             key  = "objstore.yaml"
+    #           }
+    #         }
+    #       }
+    #     }
+    #   })
+    #   ]
+    # }
 
-resource "aws_s3_bucket_public_access_block" "livekit_egress_block" {
-  bucket                  = aws_s3_bucket.livekit_egress.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  tags = {
+    Environment = "sandbox"
+  }
 }
