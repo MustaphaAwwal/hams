@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: kube-prometheus-stack
+  name: livekit-egress
+  namespace: livekit
+  resourceVersion: "301803"
+  uid: 88e06af5-5bfd-4368-8338-6d9055c98e89
+spec:
+  endpoints:
+  - interval: 30s
+    path: /
+    port: metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: livekit-server
+      app.kubernetes.io/name: livekit-server
+

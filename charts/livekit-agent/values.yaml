@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: your-docker-repo/livekit-starter-agent
+  repository: awwalmustapha/livekit-agent
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -10,11 +10,11 @@ service:
 
 resources:
   requests:
-    cpu: 100m
-    memory: 256Mi
+    cpu: 2000m
+    memory: 4000Mi
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 4000m
+    memory: 6000Mi
 
 autoscaling:
   enabled: true
@@ -23,9 +23,9 @@ autoscaling:
   targetCPUUtilizationPercentage: 50 # scale up at 0.5 CPU utilization
 
 env:
-  livekitUrl: ""
-  livekitApiKey: ""
-  livekitApiSecret: ""
-  openaiApiKey: ""
-  deepgramApiKey: ""
-  cartesiaApiKey: ""
+  livekitUrl: "wss://livekit.awwalmustapha.online/"
+  livekitApiKey: "sandbox-key"
+  livekitApiSecret: "Yw3E1V0eFMv4Tm5ShxP1WgIYfXOt1Lzrz7EsNgP+ev4="
+  openaiApiKey: "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"
+  deepgramApiKey: "dd0e9e951088b9736bc07f61bef50f380b8f4856"
+  cartesiaApiKey: "sk_car_ujw5TaNsTTiQgRTUnuvJR7"
