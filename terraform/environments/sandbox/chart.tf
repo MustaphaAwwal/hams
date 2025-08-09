@@ -9,7 +9,7 @@ resource "helm_release" "livekit_server" {
 
   set {
     name  = "livekit.turn.secretName"
-    value = kubernetes_secret.tls.id
+    value = kubernetes_secret.livekit_turn_tls.metadata.0.name
   }
 }
 
@@ -17,12 +17,12 @@ resource "helm_release" "livekit_server" {
 resource "helm_release" "livekit_egress" {
   name       = "egress"
   repository = "https://helm.livekit.io"
-  chart      = "livekit-egress"
+  chart      = "egress"
   namespace  = "livekit"
   values     = [file("${path.module}/helm-values/livekit-egress-values.yaml")]
   set {
     name  = "serviceAccount.name"
-    value = "livekit-egress-sa-role"
+    value = "livekit-egress"
   }
   set {
     name  = "serviceAccount.create"
@@ -32,5 +32,5 @@ resource "helm_release" "livekit_egress" {
       name  = "s3.bucket"
       value = aws_s3_bucket.livekit_egress.bucket
   }
-  depends_on = [module.eks, aws_s3_bucket.livekit_egress, kubernetes_service_account.livekit_egress]
+  depends_on = [helm_release.livekit_server, aws_s3_bucket.livekit_egress, kubernetes_service_account.livekit_egress]
 }

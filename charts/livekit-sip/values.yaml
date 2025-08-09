@@ -13,11 +13,11 @@ serviceAccount:
 
 resources:
   limits:
-    cpu: "1000m"
-    memory: "512Mi"
+    cpu: "2000m"
+    memory: "2Gi"
   requests:
-    cpu: "250m"
-    memory: "256Mi"
+    cpu: "2000m"
+    memory: "2Gi"
 
 nodeSelector: {}
 tolerations: []
@@ -30,15 +30,15 @@ service:
   prometheusPort: 9090
 
 sip:
-  api_key: ""
-  api_secret: ""
-  ws_url: ""
+  api_key: sandbox-key
+  api_secret: "Yw3E1V0eFMv4Tm5ShxP1WgIYfXOt1Lzrz7EsNgP+ev4="
+  ws_url: "wss://livekit.awwalmustapha.online"
   redis:
-    address: "db.default.svc.cluster.local:6379"
+    address: db.default.svc.cluster.local:6379
   use_external_ip: true
   health_port: 8080
   prometheus_port: 9090
-  log_level: info
+  log_level: debug
   sip_port: 5060
   rtp_port: 10000-20000
 
@@ -61,11 +61,14 @@ ingress:
   className: "nginx"
   annotations: {}
   hosts:
-    - host: sip.example.com
+    - host: sip.awwalmustapha.online
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  tls:
+    - hosts:
+        - sip.awwalmustapha.online
+      secretName: sip-tls
 
 existingSecret: ""
 securityContext: {}

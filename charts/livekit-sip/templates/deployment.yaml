@@ -16,6 +16,7 @@ spec:
     spec:
       {{- if .Values.hostNetwork }}
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       {{- end }}
       serviceAccountName: {{ include "livekit-sip.serviceAccountName" . }}
       securityContext: 
@@ -50,7 +51,7 @@ spec:
               containerPort: {{ .Values.sip.prometheus_port }}
               protocol: TCP
           resources:
-            {{- toYaml .Values.resources | nindent 6 }}
+            {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: config
           configMap:

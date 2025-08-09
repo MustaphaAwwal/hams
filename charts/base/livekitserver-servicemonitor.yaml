@@ -1,17 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  annotations:
-    meta.helm.sh/release-name: livekit-server
-    meta.helm.sh/release-namespace: livekit
-  creationTimestamp: "2025-08-07T21:05:48Z"
-  generation: 1
   labels:
-    app.kubernetes.io/instance: livekit-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: livekit-server
-    app.kubernetes.io/version: v1.9.0
-    helm.sh/chart: livekit-server-1.9.0
     release: kube-prometheus-stack
   name: livekit-server
   namespace: livekit

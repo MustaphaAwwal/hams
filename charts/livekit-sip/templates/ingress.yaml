@@ -23,7 +23,7 @@ spec:
               service:
                 name: {{ include "livekit-sip.fullname" $ }}
                 port:
-                  number: {{ $.Values.service.port }}
+                  number: {{ $.Values.service.sipPort }}
           {{- end }}
     {{- end }}
   {{- if .Values.ingress.tls }}
