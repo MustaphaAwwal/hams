@@ -3,6 +3,13 @@ name: Deploy LiveKit Online Charts
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - sandbox
+          - live
       action:
         description: 'Action to perform'
         required: true
@@ -28,7 +35,7 @@ env:
 jobs:
   deploy-livekit:
     runs-on: ubuntu-latest
-    
+    environment: ${{ github.event.inputs.environment }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
