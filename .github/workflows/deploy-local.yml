@@ -35,8 +35,7 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<account-id>:role/<role-name>
-          aws-region: us-west-2
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
       - name: Set up kubeconfig for EKS
         uses: silverlyra/setup-aws-eks@v0.1
