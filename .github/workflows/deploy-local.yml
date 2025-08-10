@@ -36,6 +36,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ var.AWS_REGION }}
 
       - name: Set up kubeconfig for EKS
         uses: silverlyra/setup-aws-eks@v0.1
