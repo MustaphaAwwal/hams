@@ -1,0 +1,136 @@
+name: Helm Chart Deploy (Local)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment (sandbox/live)'
+        required: true
+        default: 'sandbox'
+      chart:
+        description: 'Chart name in charts/ directory (e.g., livekit, sip-service, agent-service, base-chart)'
+        required: true
+      action:
+        description: 'Helm action to perform (install, upgrade, destroy)'
+        required: true
+        default: 'install'
+
+jobs:
+  helm-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      NAMESPACE: livekit  # single namespace used for all charts
+      LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
+      LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<account-id>:role/<role-name>
+          aws-region: us-west-2
+
+      - name: Set up kubeconfig for EKS
+        uses: silverlyra/setup-aws-eks@v0.1
+        with:
+          cluster-name: hams-${{ github.event.inputs.environment }}
+          region: us-west-2
+
+      # SIP Service chart with secrets
+      - name: Deploy SIP Service
+        if: ${{ github.event.inputs.chart == 'livekit-sip' }}
+        run: |
+          ACTION=${{ github.event.inputs.action }}
+          chart_dir="charts/livekit-sip"
+
+          case "$ACTION" in
+            install)
+              helm install livekit-sip "$chart_dir" \
+                --namespace "$NAMESPACE" \
+                --set sip.api_key=$LIVEKIT_API_KEY \
+                --set sip.api_Secret=$LIVEKIT_API_SECRET
+              ;;
+            upgrade)
+              helm upgrade sip-service "$chart_dir" \
+                --namespace "$NAMESPACE" \
+                --set sip.api_key=$LIVEKIT_API_KEY \
+                --set sip.api_Secret=$LIVEKIT_API_SECRET
+              ;;
+            destroy)
+              helm uninstall sip-service --namespace "$NAMESPACE" || true
+              ;;
+          esac
+
+      # Agent Service chart with secrets
+      - name: Deploy Agent Service
+        if: ${{ github.event.inputs.chart == 'livekit-agent' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY }}
+          CARTESIA_API_KEY: ${{ secrets.CARTESIA_API_KEY }}
+        run: |
+          ENV=${{ github.event.inputs.environment }}
+          ACTION=${{ github.event.inputs.action }}
+          chart_dir="charts/agent-service"
+
+          case "$ACTION" in
+            install)
+              helm install agent-service "$chart_dir" \
+                --namespace "$NAMESPACE" \
+                --set env.livekitApiKey = $LIVEKIT_API_KEY\
+                --set env.livekitApiSecret=$LIVEKIT_API_SECRET \
+                --set env.openaiApiKey=$OPENAI_API_KEY \
+                --set env.deepgramApiKey=$DEEPGRAM_API_KEY \
+                --set env.cartesiaApiKey=$CARTESIA_API_KEY \
+              ;;
+            upgrade)
+              helm upgrade livekit-agent "$chart_dir" \
+                --namespace "$NAMESPACE" \
+                --set env.livekitApiKey = $LIVEKIT_API_KEY\
+                --set env.livekitApiSecret=$LIVEKIT_API_SECRET \
+                --set env.openaiApiKey=$OPENAI_API_KEY \
+                --set env.deepgramApiKey=$DEEPGRAM_API_KEY \
+                --set env.cartesiaApiKey=$CARTESIA_API_KEY \
+              ;;
+            destroy)
+              helm uninstall livekit-agent --namespace "$NAMESPACE" || true
+              ;;
+          esac
+
+      # Base charts without secrets
+      - name: Deploy Base Charts
+        if: ${{ github.event.inputs.chart != 'livekit' && github.event.inputs.chart != 'sip-service' && github.event.inputs.chart != 'agent-service' }}
+        run: |
+          ENV=${{ github.event.inputs.environment }}
+          ACTION=${{ github.event.inputs.action }}
+          chart_dir="charts/${{ github.event.inputs.chart }}"
+
+          if [ ! -d "$chart_dir" ]; then
+            echo "Chart not found: $chart_dir"
+            exit 1
+          fi
+
+          case "$ACTION" in
+            install)
+              helm install "${{ github.event.inputs.chart }}" "$chart_dir" \
+                --namespace "$NAMESPACE" \
+                -f "$chart_dir/values-$ENV.yaml"
+              ;;
+            upgrade)
+              helm upgrade "${{ github.event.inputs.chart }}" "$chart_dir" \
+                --namespace "$NAMESPACE" \
+                --install \
+                -f "$chart_dir/values-$ENV.yaml"
+              ;;
+            destroy)
+              helm uninstall "${{ github.event.inputs.chart }}" --namespace "$NAMESPACE" || true
+              ;;
+          esac

@@ -34,7 +34,9 @@ sip:
   api_secret: "Yw3E1V0eFMv4Tm5ShxP1WgIYfXOt1Lzrz7EsNgP+ev4="
   ws_url: "wss://livekit.awwalmustapha.online"
   redis:
-    address: db.default.svc.cluster.local:6379
+    address: master.livekit-sandbox.xgc4fk.use1.cache.amazonaws.com:6379
+    tls:
+      enabled: true
   use_external_ip: true
   health_port: 8080
   prometheus_port: 9090

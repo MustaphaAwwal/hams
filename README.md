@@ -1,6 +1,6 @@
 # HAMS Infrastructure
 
-This repository contains the Terraform configurations for the HAMS (Healthcare Availability Monitoring System) infrastructure.
+This repository contains the Terraform configurations for the HAMS AI Platform infrastructure.
 
 ## Prerequisites
 
@@ -83,6 +83,7 @@ jobs:
 ## Repository Structure
 
 ```
+charts/
 terraform/
 ├── environments/
 │   ├── live/

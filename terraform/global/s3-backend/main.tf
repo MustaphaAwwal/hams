@@ -5,6 +5,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.state_bucket_name
+  force_destroy = true
 
   # Prevent accidental deletion of this S3 bucket
   # lifecycle {

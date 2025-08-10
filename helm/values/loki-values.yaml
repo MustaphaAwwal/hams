@@ -1,0 +1,67 @@
+# Use existing ServiceAccount
+serviceAccount:
+  create: false
+  # name: ${service_account_name}
+  name: loki
+
+
+# Loki configuration
+loki:
+  auth_enabled: false
+  
+  config: |
+    auth_enabled: false
+    server:
+      http_listen_port: 3100
+      
+    common:
+      path_prefix: /var/loki
+      storage:
+        s3:
+          s3: s3://loki-logs-bucket-sandbox
+          region: us-east-1
+      replication_factor: 1
+      ring:
+        kvstore:
+          store: inmemory
+    
+    schema_config:
+      configs:
+        - from: 2020-10-24
+          store: boltdb-shipper
+          object_store: s3
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+    
+    limits_config:
+      retention_period: 744h # 31 days
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+    
+    compactor:
+      working_directory: /var/loki/boltdb-shipper-compactor
+      shared_store: s3
+      compaction_interval: 10m
+      retention_enabled: true
+      retention_delete_delay: 2h
+
+# Enable monitoring
+serviceMonitor:
+  enabled: true
+
+# Disable test pod
+test:
+  enabled: false
+
+write:
+  persistence:
+    storageClass: gp2
+    size: 10Gi
+
+read:
+  persistence:
+    storageClass: gp2
+    size: 10Gi

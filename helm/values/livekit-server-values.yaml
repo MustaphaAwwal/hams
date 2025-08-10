@@ -10,7 +10,9 @@ livekit:
     port_range_end: 60000
     tcp_port: 7881
   redis:
-    address: db.default.svc.cluster.local:6379
+    address: master.livekit-sandbox.xgc4fk.use1.cache.amazonaws.com:6379
+    tls:
+      enabled: true
   keys:
     sandbox-key: Yw3E1V0eFMv4Tm5ShxP1WgIYfXOt1Lzrz7EsNgP+ev4=
 

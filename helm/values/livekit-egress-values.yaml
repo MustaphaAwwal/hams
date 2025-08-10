@@ -10,7 +10,9 @@ egress:
   prometheus_port: 9090
   enable_chrome_sandbox: true
   redis:
-    address: db.default.svc.cluster.local:6379
+    address: master.livekit-sandbox.xgc4fk.use1.cache.amazonaws.com:6379
+    tls:
+      enabled: true
 
 
 # autoscaling requires resources to be defined

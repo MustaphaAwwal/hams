@@ -14,12 +14,12 @@ resource "aws_iam_role_policy_attachment" "this" {
   policy_arn = aws_iam_policy.this.arn
 }
 
-resource "kubernetes_service_account" "this" {
-  metadata {
-    name      = var.name
-    namespace = var.namespace
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.this.arn
-    }
-  }
-}
+# resource "kubernetes_service_account" "this" {
+#   metadata {
+#     name      = var.name
+#     namespace = var.namespace
+#     annotations = {
+#       "eks.amazonaws.com/role-arn" = aws_iam_role.this.arn
+#     }
+#   }
+# }
