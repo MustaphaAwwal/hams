@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "livekit_egress_assume_role_policy" {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     condition {
       test     = "StringEquals"
-      variable = "${replace(module.eks.oidc_provider_arn, ":oidc-provider/", ":sub")}:sub"
+      variable = "${module.eks.oidc_provider}:sub"
       values   = ["system:serviceaccount/livekit/livekit-egress"]
     }
   }
