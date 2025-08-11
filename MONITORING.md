@@ -46,11 +46,6 @@ This document describes the monitoring architecture for a LiveKit-based real-tim
 - Structured logging from all services
 - Integration with Grafana for log visualization
 
-**Jaeger**
-- Distributed tracing across services
-- Request flow visualization
-- Performance bottleneck identification
-
 ## Data Flow
 
 ### Metrics Collection Flow
@@ -67,11 +62,6 @@ This document describes the monitoring architecture for a LiveKit-based real-tim
 1. All services send structured logs to Loki
 2. Loki aggregates and indexes logs
 3. Grafana provides log exploration and correlation with metrics
-
-### Tracing Flow
-1. Services generate trace spans for requests
-2. Jaeger collects and stores distributed traces
-3. Provides request flow visualization and performance analysis
 
 ## Key Metrics Monitored
 
@@ -138,3 +128,4 @@ This document describes the monitoring architecture for a LiveKit-based real-tim
 - Prevents service degradation through proactive scaling
 
 This monitoring architecture provides the foundation for maintaining high availability, performance, and security across the entire LiveKit communication platform.
+

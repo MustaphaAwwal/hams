@@ -11,7 +11,7 @@ This document describes the architecture of the deployment platform, designed to
 ### 1. **Infrastructure (Terraform)**
 - **EKS**: Multi-AZ, auto mode for scalability and resilience.
 - **Networking**: Configured by Terraform (VPC, subnets, security groups).
-- **Observability Stack**: Prometheus, Loki, Grafana, Jaeger installed via Terraform (Helm charts).
+- **Observability Stack**: Prometheus, Loki, Grafana.
 - **LiveKit**: Deployed via Terraform using the official Helm chart with CPU-based autoscaling.
 - **S3 (Egress Storage)**: Provisioned by Terraform for storing LiveKit egress outputs.
 - **AWS ElastiCache**: Provisioned by Terraform for Redis caching service.
@@ -47,10 +47,6 @@ This document describes the architecture of the deployment platform, designed to
 #### **Logging**
 - **Loki**: Centralized log aggregation and storage
 - **Grafana**: Log exploration and correlation with metrics
-
-#### **Distributed Tracing**
-- **Jaeger**: Request tracing across services
-- Performance analysis and bottleneck identification
 
 
 
@@ -102,3 +98,4 @@ This document describes the architecture of the deployment platform, designed to
 ## Future Enhancements
 - Add Velero for Kubernetes-native backups to S3.
 - Consider automated disaster recovery testing.
+- Jaeger for Distributed tracing 

@@ -11,6 +11,12 @@ egress:
   enable_chrome_sandbox: true
   redis:
     address: db.default.svc.cluster.local:6379
+  s3:
+    bucket: "livekit-egress-bucket"
+    region: "us-west-2"
+    endpoint: "s3.us-west-2.amazonaws.com"
+    access_key_id: ""
+    secret_access_key: ""
 
 
 # autoscaling requires resources to be defined

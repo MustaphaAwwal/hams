@@ -83,7 +83,9 @@ jobs:
 ## Repository Structure
 
 ```
-charts/
+helm/
+├── charts/
+├── values/
 terraform/
 ├── environments/
 │   ├── live/

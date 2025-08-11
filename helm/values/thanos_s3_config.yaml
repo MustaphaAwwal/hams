@@ -1,6 +1,0 @@
-type: S3
-config:
-  bucket: "thanos-metrics-bucket"
-  endpoint: "s3.amazonaws.com"
-  region: "us-east-1"
-  insecure: false
