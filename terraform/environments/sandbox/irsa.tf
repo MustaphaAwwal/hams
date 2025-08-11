@@ -49,7 +49,7 @@ module "loki_irsa" {
   source             = "./modules/irsa/s3"
   name               = "loki"
   namespace          = "observability"
-  oidc_url           = "${replace(module.eks.oidc_provider_arn, ":oidc-provider/", ":sub")}:sub"
+  oidc_url           = module.eks.oidc_provider
   oidc_arn           = module.eks.oidc_provider_arn
   s3_bucket_arn      = aws_s3_bucket.loki_logs.arn
 }
