@@ -1,91 +1,91 @@
-name: Deploy Loki Charts
+# name: Deploy Loki Charts
 
-on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        type: choice
-        options:
-          - sandbox
-          - live
-      action:
-        description: 'Action to perform'
-        required: true
-        type: choice
-        options:
-          - install
-          - upgrade
-          - uninstall
-      component:
-        description: 'Component to deploy'
-        required: true
-        type: choice
-        options:
-          - loki
-          - promtail
-          - both
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Deployment environment'
+#         required: true
+#         type: choice
+#         options:
+#           - sandbox
+#           - live
+#       action:
+#         description: 'Action to perform'
+#         required: true
+#         type: choice
+#         options:
+#           - install
+#           - upgrade
+#           - uninstall
+#       component:
+#         description: 'Component to deploy'
+#         required: true
+#         type: choice
+#         options:
+#           - loki
+#           - promtail
+#           - both
 
-env:
-  AWS_REGION: ${{ vars.AWS_REGION }}
-  EKS_CLUSTER_NAME: ${{ vars.EKS_CLUSTER_NAME }}
-  OBS_NAMESPACE: observability
+# env:
+#   AWS_REGION: ${{ vars.AWS_REGION }}
+#   EKS_CLUSTER_NAME: ${{ vars.EKS_CLUSTER_NAME }}
+#   OBS_NAMESPACE: observability
 
-jobs:
-  deploy-observability:
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+# jobs:
+#   deploy-observability:
+#     runs-on: ubuntu-latest
+#     environment: ${{ github.event.inputs.environment }}
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set up kubeconfig for EKS
-        uses: silverlyra/setup-aws-eks@v0.1
-        with:
-          cluster-name: ${{ env.EKS_CLUSTER_NAME }}
-          region: ${{ env.AWS_REGION }}
+#       - name: Set up kubeconfig for EKS
+#         uses: silverlyra/setup-aws-eks@v0.1
+#         with:
+#           cluster-name: ${{ env.EKS_CLUSTER_NAME }}
+#           region: ${{ env.AWS_REGION }}
 
 
-      - name: Add Grafana Helm repo
-        run: |
-          helm repo add grafana https://grafana.github.io/helm-charts
-          helm repo update
+#       - name: Add Grafana Helm repo
+#         run: |
+#           helm repo add grafana https://grafana.github.io/helm-charts
+#           helm repo update
 
-      - name: Install or Upgrade Loki
-        if: github.event.inputs.component != 'promtail' && github.event.inputs.action != 'uninstall'
-        run: |
-          helm upgrade --install loki \
-            grafana/loki-simple-scalable \
-            --namespace ${{ env.OBS_NAMESPACE }} \
-            --create-namespace \
-            --values helm-values/loki-values.yaml
+#       - name: Install or Upgrade Loki
+#         if: github.event.inputs.component != 'promtail' && github.event.inputs.action != 'uninstall'
+#         run: |
+#           helm upgrade --install loki \
+#             grafana/loki-simple-scalable \
+#             --namespace ${{ env.OBS_NAMESPACE }} \
+#             --create-namespace \
+#             --values helm-values/loki-values.yaml
 
-      - name: Wait for Loki to be ready
-        if: github.event.inputs.component != 'promtail' && github.event.inputs.action != 'uninstall'
-        run: |
-          kubectl rollout status statefulset -n ${{ env.OBS_NAMESPACE }} -l app.kubernetes.io/name=loki --timeout=300s
+#       - name: Wait for Loki to be ready
+#         if: github.event.inputs.component != 'promtail' && github.event.inputs.action != 'uninstall'
+#         run: |
+#           kubectl rollout status statefulset -n ${{ env.OBS_NAMESPACE }} -l app.kubernetes.io/name=loki --timeout=300s
 
-      - name: Install or Upgrade Promtail
-        if: github.event.inputs.component != 'loki' && github.event.inputs.action != 'uninstall'
-        run: |
-          helm upgrade --install promtail \
-            grafana/promtail \
-            --namespace ${{ env.OBS_NAMESPACE }} \
-            --values helm-values/promtail-values.yaml
+#       - name: Install or Upgrade Promtail
+#         if: github.event.inputs.component != 'loki' && github.event.inputs.action != 'uninstall'
+#         run: |
+#           helm upgrade --install promtail \
+#             grafana/promtail \
+#             --namespace ${{ env.OBS_NAMESPACE }} \
+#             --values helm-values/promtail-values.yaml
 
-      - name: Uninstall Loki
-        if: github.event.inputs.component != 'promtail' && github.event.inputs.action == 'uninstall'
-        run: |
-          helm uninstall loki --namespace ${{ env.OBS_NAMESPACE }} || true
+#       - name: Uninstall Loki
+#         if: github.event.inputs.component != 'promtail' && github.event.inputs.action == 'uninstall'
+#         run: |
+#           helm uninstall loki --namespace ${{ env.OBS_NAMESPACE }} || true
 
-      - name: Uninstall Promtail
-        if: github.event.inputs.component != 'loki' && github.event.inputs.action == 'uninstall'
-        run: |
-          helm uninstall promtail --namespace ${{ env.OBS_NAMESPACE }} || true
+#       - name: Uninstall Promtail
+#         if: github.event.inputs.component != 'loki' && github.event.inputs.action == 'uninstall'
+#         run: |
+#           helm uninstall promtail --namespace ${{ env.OBS_NAMESPACE }} || true

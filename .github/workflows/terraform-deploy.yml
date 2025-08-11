@@ -1,0 +1,59 @@
+# name: Terraform Infra Deploy
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Target environment (sandbox/live)'
+#         required: true
+#         default: 'sandbox'
+#       action:
+#         description: 'Terraform action to perform (plan, apply, destroy)'
+#         required: true
+#         default: 'plan'
+
+# jobs:
+#   terraform-deploy:
+#     runs-on: ubuntu-latest
+#     environment: ${{ github.event.inputs.environment }}
+#     permissions:
+#       id-token: write
+#       contents: read
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+
+#       - name: Set up Terraform
+#         uses: hashicorp/setup-terraform@v3
+#         with:
+#           terraform_version: 1.9.5 # or your preferred version
+
+#       - name: Run Terraform
+#         run: |
+#           ENV=${{ github.event.inputs.environment }}
+#           ACTION=${{ github.event.inputs.action }}
+#           cd terraform/environments/$ENV
+
+#           terraform init -input=false
+
+#           case "$ACTION" in
+#             plan)
+#               terraform plan -input=false
+#               ;;
+#             apply)
+#               terraform apply -input=false -auto-approve
+#               ;;
+#             destroy)
+#               terraform destroy -input=false -auto-approve
+#               ;;
+#             *)
+#               echo "Unknown action: $ACTION"
+#               exit 1
+#               ;;
+#           esac
